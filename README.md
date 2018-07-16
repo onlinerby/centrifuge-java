@@ -1,5 +1,7 @@
-# centrifuge-android
-Centrifugo android client
+# centrifuge-java
+Centrifugo java client
+
+This is forked from the android client with android specific code refactored.
 
 ### Usage
 
@@ -94,13 +96,12 @@ centrifugo.requestHistory("my-channel")
 Add
 
 ```
-compile 'com.github.centrifugal:centrifuge-android:0.36'
+compile 'com.github.centrifugal:centrifuge-java:0.37'
 ```
 to <b>dependencies</b> in your <b>build.gradle</b>    
 
 so your build.gradle looks something like this:
 ```
-apply plugin: 'com.android.application'
 
 repositories {
     mavenCentral()
@@ -112,11 +113,10 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.github.centrifugal:centrifuge-android:0.36'
+    compile 'com.github.centrifugal:centrifuge-java:0.37'
 }
 
 ```
 
 Have a look at example [application](https://github.com/Centrifugal/centrifuge-android/tree/dev/app)
-    
     
