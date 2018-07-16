@@ -96,7 +96,7 @@ centrifugo.requestHistory("my-channel")
 Add
 
 ```
-compile 'com.github.centrifugal:centrifuge-java:0.37'
+compile 'org.coindirect:centrifuge-java:0.37'
 ```
 to <b>dependencies</b> in your <b>build.gradle</b>    
 
@@ -113,7 +113,7 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.github.centrifugal:centrifuge-java:0.37'
+    compile 'org.coindirect:centrifuge-java:0.37'
 }
 
 ```
