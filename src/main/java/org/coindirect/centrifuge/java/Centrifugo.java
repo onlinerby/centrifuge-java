@@ -24,6 +24,7 @@ import org.coindirect.centrifuge.java.message.presence.PresenceMessage;
 import org.coindirect.centrifuge.java.subscription.ActiveSubscription;
 import org.coindirect.centrifuge.java.subscription.SubscriptionRequest;
 
+import org.coindirect.centrifuge.java.subscription.UnsubscribeRequest;
 import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
@@ -346,6 +347,26 @@ public class Centrifugo {
         }
     }
 
+    public void unsubscribe(final UnsubscribeRequest unsubscribeRequest) {
+        if (state != STATE_CONNECTED) {
+            for(SubscriptionRequest request : channelsToSubscribe) {
+                if(request.getChannel().equals(unsubscribeRequest.getChannel())) {
+                    channelsToSubscribe.remove(request);
+                }
+            }
+            return;
+        }
+        try {
+            JSONObject jsonObject = new JSONObject();
+            String uuid = fillUnsubscribeJson(jsonObject, unsubscribeRequest);
+            JSONArray messages = new JSONArray();
+            messages.put(jsonObject);
+            client.send(messages.toString());
+        } catch (JSONException e) {
+            logErrorWhen("during unsubscribe", e);
+        }
+    }
+
     /**
      * Fills JSON with subscription info
      * Derive this class and override this method to add custom fields to JSON object
@@ -371,6 +392,25 @@ public class Centrifugo {
             params.put("last", lastMessageId);
             params.put("recover", true);
         }
+        jsonObject.put("params", params);
+        return uuid;
+    }
+
+    /**
+     * Fills JSON with unsubscribe info
+     * Derive this class and override this method to add custom fields to JSON object
+     * @param jsonObject subscription message
+     * @param unsubscribeRequest request for unsubscribew
+     * @throws JSONException thrown to indicate a problem with the JSON API
+     * @return uid of this command
+     */
+    protected String fillUnsubscribeJson(final JSONObject jsonObject, final UnsubscribeRequest unsubscribeRequest) throws JSONException {
+        String uuid = UUID.randomUUID().toString();
+        jsonObject.put("uid", uuid);
+        jsonObject.put("method", "unsubscribe");
+        JSONObject params = new JSONObject();
+        String channel = unsubscribeRequest.getChannel();
+        params.put("channel", channel);
         jsonObject.put("params", params);
         return uuid;
     }
@@ -414,6 +454,11 @@ public class Centrifugo {
             }
             return;
         }
+
+        if (method.equals("unsubscribe")) {
+            return;
+        }
+
         if (method.equals("join")) {
             JoinMessage joinMessage = new JoinMessage(message);
             onJoinMessage(joinMessage);

@@ -6,7 +6,7 @@ buildscript {
 }
 
 group 'org.coindirect'
-version '0.37'
+version '0.38'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
