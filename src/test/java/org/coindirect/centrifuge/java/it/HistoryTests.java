@@ -24,6 +24,8 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -89,7 +91,7 @@ public class HistoryTests {
             }
 
             @Override
-            public void onConnected() {
+            public void onConnected(@Nullable final String clientId) {
                 connected.setData(true);
             }
 

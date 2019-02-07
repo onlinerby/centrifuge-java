@@ -55,7 +55,7 @@ import java.util.concurrent.Executors;
 /**
  * This file is part of centrifuge-android
  * Created by semyon on 29.04.16.
- * */
+ */
 public class Centrifugo {
     private static final Logger Log = LoggerFactory.getLogger(Centrifugo.class);
 
@@ -77,6 +77,7 @@ public class Centrifugo {
 
     private String userId;
 
+    @Nullable
     private String clientId;
 
     private String token;
@@ -110,7 +111,7 @@ public class Centrifugo {
 
     private Map<String, DownstreamMessageListener> commandListeners = new HashMap<>();
 
-    protected Centrifugo(final String wsURI, final String userId, final String clientId, final String token, final String tokenTimestamp, final String info) {
+    protected Centrifugo(final String wsURI, final String userId, @Nullable final String clientId, final String token, final String tokenTimestamp, final String info) {
         this.wsURI = wsURI;
         this.userId = userId;
         this.clientId = clientId;
@@ -173,6 +174,7 @@ public class Centrifugo {
      * WebSocket connection successful opening handler
      * You don't need to override this method, unless you want to change
      * client's behaviour before connection
+     *
      * @param handshakeData information about WebSocket handshake
      */
     protected void onOpen(final ServerHandshake handshakeData) {
@@ -196,8 +198,9 @@ public class Centrifugo {
     /**
      * Fills JSON with connection to centrifugo info
      * Derive this class and override this method to add custom fields to JSON object
+     *
      * @param handshakeData information about WebSocket handshake
-     * @param jsonObject connection message
+     * @param jsonObject    connection message
      * @throws JSONException thrown to indicate a problem with the JSON API
      */
     protected void fillConnectionJSON(final Handshakedata handshakeData, final JSONObject jsonObject) throws JSONException {
@@ -218,9 +221,9 @@ public class Centrifugo {
         }
     }
 
-    protected void onConnected() {
+    protected void onConnected(@Nullable final String clientId) {
         if (connectionListener != null) {
-            connectionListener.onConnected();
+            connectionListener.onConnected(clientId);
         }
     }
 
@@ -246,7 +249,7 @@ public class Centrifugo {
     }
 
     public void logErrorWhen(final String when, final Exception ex) {
-        Log.error("Error occured  " + when +  ": ", ex);
+        Log.error("Error occured  " + when + ": ", ex);
     }
 
     public void onError(final Exception ex) {
@@ -349,8 +352,8 @@ public class Centrifugo {
 
     public void unsubscribe(final UnsubscribeRequest unsubscribeRequest) {
         if (state != STATE_CONNECTED) {
-            for(SubscriptionRequest request : channelsToSubscribe) {
-                if(request.getChannel().equals(unsubscribeRequest.getChannel())) {
+            for (SubscriptionRequest request : channelsToSubscribe) {
+                if (request.getChannel().equals(unsubscribeRequest.getChannel())) {
                     channelsToSubscribe.remove(request);
                 }
             }
@@ -370,11 +373,12 @@ public class Centrifugo {
     /**
      * Fills JSON with subscription info
      * Derive this class and override this method to add custom fields to JSON object
-     * @param jsonObject subscription message
+     *
+     * @param jsonObject          subscription message
      * @param subscriptionRequest request for subscription
-     * @param lastMessageId id of last message
-     * @throws JSONException thrown to indicate a problem with the JSON API
+     * @param lastMessageId       id of last message
      * @return uid of this command
+     * @throws JSONException thrown to indicate a problem with the JSON API
      */
     protected String fillSubscriptionJSON(final JSONObject jsonObject, final SubscriptionRequest subscriptionRequest, @Nullable final String lastMessageId) throws JSONException {
         String uuid = UUID.randomUUID().toString();
@@ -399,10 +403,11 @@ public class Centrifugo {
     /**
      * Fills JSON with unsubscribe info
      * Derive this class and override this method to add custom fields to JSON object
-     * @param jsonObject subscription message
+     *
+     * @param jsonObject         subscription message
      * @param unsubscribeRequest request for unsubscribew
-     * @throws JSONException thrown to indicate a problem with the JSON API
      * @return uid of this command
+     * @throws JSONException thrown to indicate a problem with the JSON API
      */
     protected String fillUnsubscribeJson(final JSONObject jsonObject, final UnsubscribeRequest unsubscribeRequest) throws JSONException {
         String uuid = UUID.randomUUID().toString();
@@ -425,6 +430,7 @@ public class Centrifugo {
      * (e.g. com.example.testapp.action.CENTRIFUGO_PUSH)
      * You don't need to override this method, unless you want to change
      * client's behaviour after connection and before subscription
+     *
      * @param message message to handle
      */
     protected void onMessage(@Nonnull final JSONObject message) {
@@ -442,7 +448,7 @@ public class Centrifugo {
             for (ActiveSubscription activeSubscription : subscribedChannels.values()) {
                 subscribe(activeSubscription.getInitialRequest(), activeSubscription.getLastMessageId());
             }
-            onConnected();
+            onConnected(this.clientId);
             return;
         }
         if (method.equals("subscribe")) {
@@ -588,6 +594,7 @@ public class Centrifugo {
         /**
          * Internal handler of message from WebSocket, which can be either
          * JSONObject and JSONArray
+         *
          * @param message string frame
          */
         @Override

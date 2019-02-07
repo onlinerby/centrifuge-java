@@ -12,6 +12,7 @@ import org.coindirect.centrifuge.java.listener.SubscriptionListener;
 import org.coindirect.centrifuge.java.message.DataMessage;
 import org.coindirect.centrifuge.java.util.DataLock;
 import org.coindirect.centrifuge.java.util.Signing;
+
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 
 import org.json.JSONException;
@@ -20,6 +21,8 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.testcontainers.containers.GenericContainer;
+
+import javax.annotation.Nullable;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -30,7 +33,7 @@ import okhttp3.Response;
 /**
  * This file is part of centrifuge-android
  * Created by semyon on 29.04.16.
- * */
+ */
 @RunWith(RobolectricGradleTestRunner.class)
 @Ignore
 public class BasicTests {
@@ -42,7 +45,7 @@ public class BasicTests {
     @Before
     public void beforeMethod() throws Exception {
         centrifugo = new GenericContainer("samvimes/centrifugo-with-web:1.3")
-                        .withExposedPorts(8000);
+                .withExposedPorts(8000);
         centrifugo.start();
         mockWebServer = new MockWebServer();
         mockWebServer.start();
@@ -81,10 +84,11 @@ public class BasicTests {
 
         centrifugo.setConnectionListener(new ConnectionListener() {
             @Override
-            public void onWebSocketOpen() {}
+            public void onWebSocketOpen() {
+            }
 
             @Override
-            public void onConnected() {
+            public void onConnected(@Nullable final String clientId) {
                 connected.setData(true);
             }
 
@@ -132,7 +136,7 @@ public class BasicTests {
             }
 
             @Override
-            public void onConnected() {
+            public void onConnected(@Nullable final String clientId) {
                 connected.setData(true);
             }
 
@@ -202,7 +206,7 @@ public class BasicTests {
             }
 
             @Override
-            public void onConnected() {
+            public void onConnected(@Nullable final String clientId) {
                 connected.setData(true);
             }
 
@@ -273,7 +277,7 @@ public class BasicTests {
             }
 
             @Override
-            public void onConnected() {
+            public void onConnected(@Nullable final String clientId) {
                 connected.setData(true);
             }
 
@@ -370,7 +374,7 @@ public class BasicTests {
             }
 
             @Override
-            public void onConnected() {
+            public void onConnected(@Nullable final String clientId) {
                 connected.setData(true);
             }
 
@@ -453,7 +457,8 @@ public class BasicTests {
             params.put("channel", channel);
             params.put("data", message);
             sendMessageJson.put("params", params);
-        } catch (JSONException e) {}
+        } catch (JSONException e) {
+        }
         return sendMessageJson;
     }
 

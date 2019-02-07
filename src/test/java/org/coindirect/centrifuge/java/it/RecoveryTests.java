@@ -20,6 +20,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.testcontainers.containers.GenericContainer;
 
+import javax.annotation.Nullable;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -85,7 +87,7 @@ public class RecoveryTests {
             }
 
             @Override
-            public void onConnected() {
+            public void onConnected(@Nullable final String clientId) {
                 connected.setData(true);
             }
 
