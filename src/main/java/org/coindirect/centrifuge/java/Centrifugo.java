@@ -225,6 +225,9 @@ public class Centrifugo {
         if (connectionListener != null) {
             connectionListener.onConnected(clientId);
         }
+        if (reconnectConfig != null) {
+            reconnectConfig.resetReconnectCount();
+        }
     }
 
     protected void onDisconnected(final int code, final String reason, final boolean remote) {

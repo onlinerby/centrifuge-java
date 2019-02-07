@@ -9,8 +9,10 @@ import javax.annotation.Nonnegative;
  */
 public class ReconnectConfig {
 
+    @Nonnegative
     private int maxReconnectCount;
 
+    @Nonnegative
     private long reconnectDelay;
 
     private int curReconnectCount = 0;
@@ -24,7 +26,7 @@ public class ReconnectConfig {
         return maxReconnectCount;
     }
 
-    public void setMaxReconnectCount(final int maxReconnectCount) {
+    public void setMaxReconnectCount(@Nonnegative final int maxReconnectCount) {
         this.maxReconnectCount = maxReconnectCount;
     }
 
@@ -32,12 +34,16 @@ public class ReconnectConfig {
         return reconnectDelay;
     }
 
-    public void setReconnectDelay(final long reconnectDelay) {
+    public void setReconnectDelay(@Nonnegative final long reconnectDelay) {
         this.reconnectDelay = reconnectDelay;
     }
 
     public void incReconnectCount() {
         curReconnectCount++;
+    }
+
+    public void resetReconnectCount() {
+        curReconnectCount = 0;
     }
 
     public boolean shouldReconnect() {
