@@ -93,19 +93,35 @@ centrifugo.requestHistory("my-channel")
 ```
 
 ### Installation
-Add
+Add it in your root <b>build.gradle</b> at the end of repositories:
 
 ```
-compile 'org.coindirect:centrifuge-java:0.37'
+allprojects {
+    repositories {
+	    ...
+		maven { url 'https://jitpack.io' }
+	}
+}
+```
+
+And add
+
+```
+dependencies {
+    ...
+    implementation 'com.github.onlinerby:centrifuge-java:0.38'
+}
 ```
 to <b>dependencies</b> in your <b>build.gradle</b>    
 
 so your build.gradle looks something like this:
 ```
 
-repositories {
-    mavenCentral()
-    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+allprojects {
+    repositories {
+	    ...
+		maven { url 'https://jitpack.io' }
+	}
 }
 
 ...
@@ -113,7 +129,7 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'org.coindirect:centrifuge-java:0.37'
+    compile 'com.github.onlinerby:centrifuge-java:0.38'
 }
 
 ```
