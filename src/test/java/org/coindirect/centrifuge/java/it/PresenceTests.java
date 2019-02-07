@@ -23,6 +23,8 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -85,7 +87,7 @@ public class PresenceTests {
             }
 
             @Override
-            public void onConnected() {
+            public void onConnected(@Nullable final String clientId) {
                 connected.setData(true);
             }
 
@@ -173,7 +175,7 @@ public class PresenceTests {
             }
 
             @Override
-            public void onConnected() {
+            public void onConnected(@Nullable final String clientId) {
                 connected.setData(true);
             }
 
@@ -262,7 +264,7 @@ public class PresenceTests {
             }
 
             @Override
-            public void onConnected() {
+            public void onConnected(@Nullable final String clientId) {
                 connected.setData(true);
             }
 
@@ -362,7 +364,7 @@ public class PresenceTests {
             }
 
             @Override
-            public void onConnected() {
+            public void onConnected(@Nullable final String clientId) {
                 connected.setData(true);
             }
 

@@ -87,7 +87,7 @@ public class AutoReconnectTests {
             }
 
             @Override
-            public void onConnected() {
+            public void onConnected(@Nullable final String clientId) {
                 connected.setData(true);
             }
 
@@ -101,7 +101,7 @@ public class AutoReconnectTests {
                     }
 
                     @Override
-                    public void onConnected() {
+                    public void onConnected(@Nullable final String clientId) {
 
                     }
 
