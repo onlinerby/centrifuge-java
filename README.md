@@ -1,4 +1,5 @@
-[![Release](https://jitpack.io/v/onlinerby/centrifuge-java.svg)]
+![Release](https://jitpack.io/v/onlinerby/centrifuge-java.svg)
+
 (https://jitpack.io/#onlinerby/centrifuge-java)
 
 # centrifuge-java
