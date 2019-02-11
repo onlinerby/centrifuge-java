@@ -22,21 +22,21 @@ repositories {
 
 
 dependencies {
-    compile 'org.java-websocket:Java-WebSocket:1.3.0'
-    compile 'com.google.code.findbugs:jsr305:3.0.1'
-    compile 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'org.java-websocket:Java-WebSocket:1.3.0'
+    implementation 'com.google.code.findbugs:jsr305:3.0.1'
+    implementation 'org.slf4j:slf4j-api:1.7.25'
     // https://mvnrepository.com/artifact/org.json/json
-    compile group: 'org.json', name: 'json', version: '20180130'
+    implementation group: 'org.json', name: 'json', version: '20180130'
 
-    testCompile 'junit:junit:4.12'
-    testCompile('org.robolectric:robolectric:3.0') {
+    testImplementation 'junit:junit:4.12'
+    testImplementation('org.robolectric:robolectric:3.0') {
         exclude module: 'httpclient'
     }
-    testCompile 'org.mockito:mockito-core:2.+'
-    testCompile 'com.squareup.okhttp3:okhttp:3.2.0'
-    testCompile 'com.squareup.okhttp:mockwebserver:2.7.5'
-    testCompile 'commons-codec:commons-codec:1.9'
-    testCompile files('lib/testcontainers-1.0.5.jar')
+    testImplementation 'org.mockito:mockito-core:2.+'
+    testImplementation 'com.squareup.okhttp3:okhttp:3.2.0'
+    testImplementation 'com.squareup.okhttp:mockwebserver:2.7.5'
+    testImplementation 'commons-codec:commons-codec:1.9'
+    testImplementation files('lib/testcontainers-1.0.5.jar')
 }
 
 
@@ -46,9 +46,9 @@ publishing.publications {
 
         pom.withXml {
             asNode().get('dependencies').get(0).get('dependency').each() { dep ->
-                String pomVer = dep.get("version").text();
-                String pomArtifactId = dep.get("artifactId").text();
-                String pomGroupId = dep.get("groupId").text();
+                String pomVer = dep.get("version").text()
+                String pomArtifactId = dep.get("artifactId").text()
+                String pomGroupId = dep.get("groupId").text()
                 if(pomVer.isEmpty()){
                     def depVer = project.dependencyManagement.dependencyManagementContainer.globalDependencyManagement.versions["$pomGroupId:$pomArtifactId"]
                     dep.appendNode('version',depVer)
