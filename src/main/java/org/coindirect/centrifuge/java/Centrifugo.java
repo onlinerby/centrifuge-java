@@ -541,6 +541,23 @@ public class Centrifugo {
         return presenceMessage;
     }
 
+    public void sendEvent(final String event,
+                          final String channelName) {
+        JSONObject jsonObject = new JSONObject();
+        String commandId = UUID.randomUUID().toString();
+        try {
+            jsonObject.put("uid", commandId);
+            jsonObject.put("method", "publish");
+            JSONObject params = new JSONObject();
+            params.put("channel", channelName);
+            params.put("data", event);
+            jsonObject.put("params", params);
+        } catch (JSONException e) {
+            //FIXME error handling
+        }
+        client.send(jsonObject.toString());
+    }
+
     private void scheduleReconnect(@Nonnegative final long delay) {
         final Timer timer = new Timer();
         timer.schedule(new TimerTask() {

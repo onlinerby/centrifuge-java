@@ -10,7 +10,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.1'
+        classpath 'com.android.tools.build:gradle:3.3.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
@@ -52,9 +52,9 @@ dependencies {
     testImplementation('org.robolectric:robolectric:3.0') {
         exclude module: 'httpclient'
     }
-    testImplementation 'org.mockito:mockito-core:2.24.0'
-    testImplementation 'com.squareup.okhttp3:okhttp:3.12.1'
+    testImplementation 'org.mockito:mockito-core:2.25.1'
+    testImplementation 'com.squareup.okhttp3:okhttp:3.14.0'
     testImplementation 'com.squareup.okhttp:mockwebserver:2.7.5'
-    testImplementation 'commons-codec:commons-codec:1.9'
+    testImplementation 'commons-codec:commons-codec:1.10'
     testImplementation files('lib/testcontainers-1.0.5.jar')
 }
