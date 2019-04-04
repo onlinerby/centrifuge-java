@@ -1,5 +1,6 @@
 package org.coindirect.centrifuge.java.it;
 
+import org.coindirect.centrifuge.java.BuildConfig;
 import org.coindirect.centrifuge.java.Centrifugo;
 import org.coindirect.centrifuge.java.credentials.Token;
 import org.coindirect.centrifuge.java.credentials.User;
@@ -19,7 +20,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 import org.testcontainers.containers.GenericContainer;
 
 import java.util.List;
@@ -36,8 +38,8 @@ import okhttp3.Response;
  * This file is part of centrifuge-android
  * Created by Semyon on 04.05.2016.
  */
-@RunWith(RobolectricGradleTestRunner.class)
-@Ignore
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class HistoryTests {
 
     public GenericContainer centrifugo;

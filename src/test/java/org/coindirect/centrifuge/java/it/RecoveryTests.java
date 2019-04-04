@@ -17,7 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.testcontainers.containers.GenericContainer;
 
 import javax.annotation.Nullable;
@@ -32,7 +32,7 @@ import okhttp3.Response;
  * This file is part of centrifuge-android
  * Created by Semyon on 04.05.2016.
  */
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Ignore
 public class RecoveryTests {
 

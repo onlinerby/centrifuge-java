@@ -12,6 +12,7 @@ import org.coindirect.centrifuge.java.listener.SubscriptionListener;
 import org.coindirect.centrifuge.java.message.DataMessage;
 import org.coindirect.centrifuge.java.message.DownstreamMessage;
 import org.coindirect.centrifuge.java.message.SubscribeMessage;
+import org.coindirect.centrifuge.java.message.event.SendEvent;
 import org.coindirect.centrifuge.java.message.history.HistoryMessage;
 import org.coindirect.centrifuge.java.message.presence.JoinMessage;
 import org.coindirect.centrifuge.java.message.presence.LeftMessage;
@@ -539,6 +540,27 @@ public class Centrifugo {
         });
         client.send(jsonObject.toString());
         return presenceMessage;
+    }
+
+    public void sendEvent(final SendEvent event,
+                          final String channelName) {
+        JSONObject jsonObject = new JSONObject();
+        String commandId = UUID.randomUUID().toString();
+        try {
+            jsonObject.put("uid", commandId);
+            jsonObject.put("method", "publish");
+            JSONObject params = new JSONObject();
+            params.put("channel", channelName);
+            JSONObject jsonEvent = new JSONObject();
+            jsonEvent.put("chatId", event.getChatId());
+            jsonEvent.put("event", event.getEvent());
+            jsonEvent.put("action", event.getAction());
+            params.put("data", jsonEvent);
+            jsonObject.put("params", params);
+        } catch (JSONException e) {
+            //FIXME error handling
+        }
+        client.send(jsonObject.toString());
     }
 
     private void scheduleReconnect(@Nonnegative final long delay) {
