@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group='com.github.onlinerby'
+group = 'com.github.onlinerby'
 
 buildscript {
     repositories {
@@ -30,8 +30,10 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "0.1"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    testOptions.unitTests.includeAndroidResources = true
 }
 
 sourceCompatibility = 1.8
@@ -49,12 +51,17 @@ dependencies {
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'org.slf4j:slf4j-api:1.7.25'
     testImplementation 'junit:junit:4.12'
-    testImplementation('org.robolectric:robolectric:3.0') {
-        exclude module: 'httpclient'
-    }
+    testImplementation 'org.robolectric:robolectric:4.2'
     testImplementation 'org.mockito:mockito-core:2.25.1'
     testImplementation 'com.squareup.okhttp3:okhttp:3.14.0'
     testImplementation 'com.squareup.okhttp:mockwebserver:2.7.5'
     testImplementation 'commons-codec:commons-codec:1.10'
-    testImplementation files('lib/testcontainers-1.0.5.jar')
+    testImplementation "org.testcontainers:testcontainers:1.11.1"
+//    testImplementation files('lib/testcontainers-1.0.5.jar')
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.google.guava:guava:27.1-android'
+    }
 }
