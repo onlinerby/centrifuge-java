@@ -23,6 +23,7 @@ import org.coindirect.centrifuge.java.subscription.UnsubscribeRequest;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.Handshakedata;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
@@ -671,7 +672,11 @@ public class Centrifugo {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Client.super.send(text);
+                    try {
+                        Client.super.send(text);
+                    } catch (WebsocketNotConnectedException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             });
         }
