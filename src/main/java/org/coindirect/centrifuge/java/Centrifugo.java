@@ -37,6 +37,7 @@ import java.net.URI;
 import java.nio.channels.NotYetConnectedException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -340,9 +341,11 @@ public class Centrifugo {
 
     public void unsubscribe(final UnsubscribeRequest unsubscribeRequest) {
         if (state != STATE_CONNECTED) {
-            for (SubscriptionRequest request : channelsToSubscribe) {
+            Iterator<SubscriptionRequest> subscriptionIterator = channelsToSubscribe.iterator();
+            while (subscriptionIterator.hasNext()) {
+                SubscriptionRequest request = subscriptionIterator.next();
                 if (request.getChannel().equals(unsubscribeRequest.getChannel())) {
-                    channelsToSubscribe.remove(request);
+                    subscriptionIterator.remove();
                 }
             }
             return;
