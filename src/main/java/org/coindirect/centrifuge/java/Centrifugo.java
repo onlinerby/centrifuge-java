@@ -572,6 +572,20 @@ public class Centrifugo {
         client.send(jsonObject.toString());
     }
 
+    public void pind() {
+        JSONObject jsonObject = new JSONObject();
+        String commandId = UUID.randomUUID().toString();
+
+        try {
+            jsonObject.put("uid", commandId);
+            jsonObject.put("method", "ping");
+        } catch (JSONException e) {
+            //FIXME error handling
+        }
+
+        client.send(jsonObject.toString());
+    }
+
     private void scheduleReconnect(@Nonnegative final long delay) {
         final Timer timer = new Timer();
         timer.schedule(new TimerTask() {
