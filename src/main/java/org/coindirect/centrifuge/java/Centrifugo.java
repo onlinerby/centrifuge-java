@@ -135,6 +135,10 @@ public class Centrifugo {
         }
     }
 
+    public boolean isConnect() {
+        return this.state == STATE_CONNECTED;
+    }
+
     @Nullable
     public JoinLeaveListener getJoinLeaveListener() {
         return joinLeaveListener;
