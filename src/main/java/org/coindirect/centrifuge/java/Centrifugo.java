@@ -339,6 +339,11 @@ public class Centrifugo {
         }
     }
 
+    /**
+     * Method for unsubscribe from specific channel. {@link UnsubscribeRequest}
+     *
+     * @param unsubscribeRequest chanel to unsubscribe from
+     */
     public void unsubscribe(final UnsubscribeRequest unsubscribeRequest) {
         if (state != STATE_CONNECTED) {
             Iterator<SubscriptionRequest> subscriptionIterator = channelsToSubscribe.iterator();
