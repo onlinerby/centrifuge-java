@@ -435,6 +435,9 @@ public class Centrifugo {
      */
     protected void onMessage(@Nonnull final JSONObject message) {
         String method = message.optString("method", "");
+        if (method.equals("publish") || method.equals("ping")) {
+            return;
+        }
         if (method.equals("connect")) {
             JSONObject body = message.optJSONObject("body");
             if (body != null) {
