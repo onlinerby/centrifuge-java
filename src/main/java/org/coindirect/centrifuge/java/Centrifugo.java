@@ -590,6 +590,7 @@ public class Centrifugo {
             //FIXME error handling
         }
 
+        client.sendPing();
         client.send(jsonObject.toString());
     }
 
