@@ -617,6 +617,7 @@ public class Centrifugo {
 
         public Client(final URI serverURI, final Draft draft) {
             super(serverURI, draft);
+            setConnectionLostTimeout(0);
             clientThread = new Thread(this, "Centrifugo");
         }
 
