@@ -10,7 +10,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.android.tools.build:gradle:3.4.0'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
@@ -49,11 +49,11 @@ repositories {
 dependencies {
     implementation 'com.github.archiecrown:Java-WebSocket:ca36afc469'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    implementation 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'org.slf4j:slf4j-api:1.7.26'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:4.2'
-    testImplementation 'org.mockito:mockito-core:2.25.1'
-    testImplementation 'com.squareup.okhttp3:okhttp:3.14.0'
+    testImplementation 'org.mockito:mockito-core:2.27.0'
+    testImplementation 'com.squareup.okhttp3:okhttp:3.14.1'
     testImplementation 'com.squareup.okhttp:mockwebserver:2.7.5'
     testImplementation 'commons-codec:commons-codec:1.10'
     testImplementation "org.testcontainers:testcontainers:1.11.1"

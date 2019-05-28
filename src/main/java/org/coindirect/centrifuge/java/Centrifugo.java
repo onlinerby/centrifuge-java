@@ -26,6 +26,7 @@ import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.Handshakedata;
 import org.java_websocket.handshake.ServerHandshake;
+import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +36,10 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.nio.channels.NotYetConnectedException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,6 +54,9 @@ import java.util.concurrent.Executors;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 
 /**
@@ -124,6 +132,37 @@ public class Centrifugo {
             this.state = STATE_CONNECTING;
             final URI uri = URI.create(wsURI);
             client = new Client(uri, new Draft_6455());
+
+            SSLContext sslContext = null;
+            try {
+                sslContext = SSLContext.getDefault();
+                sslContext.init(null, new TrustManager[]{
+                        new X509TrustManager() {
+
+                            @Override
+                            public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+
+                            }
+
+                            @Override
+                            public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+
+                            }
+
+                            @Override
+                            public X509Certificate[] getAcceptedIssuers() {
+                                return new X509Certificate[0];
+                            }
+                        }
+                }, new SecureRandom());
+            } catch (KeyManagementException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+            if (sslContext != null) {
+                client.setSocketFactory(sslContext.getSocketFactory());
+            }
             client.start();
         }
     }
