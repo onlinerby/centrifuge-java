@@ -141,12 +141,12 @@ public class Centrifugo {
 
                             @Override
                             public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-
+                                //nothing
                             }
 
                             @Override
                             public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-
+                                //nothing
                             }
 
                             @Override
