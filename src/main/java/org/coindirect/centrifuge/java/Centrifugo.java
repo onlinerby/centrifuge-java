@@ -268,14 +268,12 @@ public class Centrifugo {
             connectionListener.onDisconnected(code, reason, remote);
         }
         //connection closed by remote host or was lost
-        if (remote) {
-            if (reconnectConfig != null) {
-                //reconnect enabled
-                if (reconnectConfig.shouldReconnect()) {
-                    reconnectConfig.incReconnectCount();
-                    long reconnectDelay = reconnectConfig.getReconnectDelay();
-                    scheduleReconnect(reconnectDelay);
-                }
+        if (reconnectConfig != null) {
+            //reconnect enabled
+            if (reconnectConfig.shouldReconnect()) {
+                reconnectConfig.incReconnectCount();
+                long reconnectDelay = reconnectConfig.getReconnectDelay();
+                scheduleReconnect(reconnectDelay);
             }
         }
     }
