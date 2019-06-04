@@ -50,6 +50,7 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -169,6 +170,7 @@ public class Centrifugo {
 
     public void disconnect() {
         if (client != null && state == STATE_CONNECTED) {
+            reconnectConfig = null;
             state = STATE_DISCONNECTING;
             client.stop();
         }
