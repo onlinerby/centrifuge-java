@@ -136,7 +136,7 @@ public class Centrifugo {
 
             SSLContext sslContext = null;
             try {
-                sslContext = SSLContext.getDefault();
+                sslContext = SSLContext.getInstance("TLSv1");
                 sslContext.init(null, new TrustManager[]{
                         new X509TrustManager() {
 
