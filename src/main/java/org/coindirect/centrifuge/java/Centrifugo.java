@@ -287,6 +287,15 @@ public class Centrifugo {
     public void onError(final Exception ex) {
         Log.error("onError: ", ex);
         state = STATE_ERROR;
+        //try to recconect
+        if (reconnectConfig != null) {
+            //reconnect enabled
+            if (reconnectConfig.shouldReconnect()) {
+                reconnectConfig.incReconnectCount();
+                long reconnectDelay = reconnectConfig.getReconnectDelay();
+                scheduleReconnect(reconnectDelay);
+            }
+        }
     }
 
     protected void onSubscriptionError(@Nullable final String subscriptionError) {
