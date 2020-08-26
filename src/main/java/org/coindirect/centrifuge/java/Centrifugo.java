@@ -60,8 +60,6 @@ import javax.net.ssl.SSLContext;
 public class Centrifugo {
     private static final Logger Log = LoggerFactory.getLogger(Centrifugo.class);
 
-    private static final String TAG = "CentrifugoClient";
-
     private static final String PRIVATE_CHANNEL_PREFIX = "$";
 
     private static final int STATE_NOT_CONNECTED = 0;
@@ -73,6 +71,8 @@ public class Centrifugo {
     private static final int STATE_DISCONNECTING = 3;
 
     private static final int STATE_CONNECTING = 4;
+
+    private static final int CONNECTION_LOST = -10;
 
     private String wsURI;
 
@@ -263,14 +263,9 @@ public class Centrifugo {
     public void onError(final Exception ex) {
         Log.error("onError: ", ex);
         state = STATE_ERROR;
-        //try to recconect
-        if (reconnectConfig != null) {
-            //reconnect enabled
-            if (reconnectConfig.shouldReconnect()) {
-                reconnectConfig.incReconnectCount();
-                long reconnectDelay = reconnectConfig.getReconnectDelay();
-                scheduleReconnect(reconnectDelay);
-            }
+
+        if (connectionListener != null) {
+            connectionListener.onDisconnected(CONNECTION_LOST, "", false);
         }
     }
 
