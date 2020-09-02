@@ -51,6 +51,7 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
 
 
 /**
@@ -648,6 +649,12 @@ public class Centrifugo {
         @Override
         public void onOpen(final ServerHandshake handshakedata) {
             Centrifugo.this.onOpen(handshakedata);
+        }
+
+        @Override
+        protected void onSetSSLParameters(SSLParameters sslParameters) {
+            //noting
+            //TODO fix for Android API 24 and lower
         }
 
         /**
