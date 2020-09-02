@@ -1,5 +1,7 @@
 package org.coindirect.centrifuge.java;
 
+import android.os.Build;
+
 import org.coindirect.centrifuge.java.async.Future;
 import org.coindirect.centrifuge.java.config.ReconnectConfig;
 import org.coindirect.centrifuge.java.credentials.Token;
@@ -653,6 +655,9 @@ public class Centrifugo {
 
         @Override
         protected void onSetSSLParameters(SSLParameters sslParameters) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                super.onSetSSLParameters(sslParameters);
+            }
             //noting
             //TODO fix for Android API 24 and lower
         }
