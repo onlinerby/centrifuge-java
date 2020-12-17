@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.nio.channels.NotYetConnectedException;
+import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,8 +133,9 @@ public class Centrifugo {
 
             SSLContext sslContext;
             try {
-                sslContext = SSLContext.getDefault();
-            } catch (NoSuchAlgorithmException e) {
+                sslContext = SSLContext.getInstance("TLS");
+                sslContext.init( null, null, null );
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
                 e.printStackTrace();
                 if (connectionListener != null) {
                     connectionListener.onDisconnected(-1, e.getMessage(), true);
