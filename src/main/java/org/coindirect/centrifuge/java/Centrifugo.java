@@ -39,6 +39,9 @@ import java.net.URI;
 import java.nio.channels.NotYetConnectedException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,6 +58,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 
 /**
@@ -134,7 +139,7 @@ public class Centrifugo {
             SSLContext sslContext;
             try {
                 sslContext = SSLContext.getInstance("TLS");
-                sslContext.init( null, null, null );
+                sslContext.init(null, getTrustManager(), new SecureRandom());
             } catch (NoSuchAlgorithmException | KeyManagementException e) {
                 e.printStackTrace();
                 if (connectionListener != null) {
@@ -147,6 +152,25 @@ public class Centrifugo {
             }
             client.start();
         }
+    }
+
+    private TrustManager[] getTrustManager() {
+        return new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                    }
+
+                    @Override
+                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                    }
+
+                    @Override
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new java.security.cert.X509Certificate[]{};
+                    }
+                }
+        };
     }
 
     public void disconnect() {
