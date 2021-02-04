@@ -1,5 +1,7 @@
 package org.coindirect.centrifuge.java;
 
+import android.os.Build;
+
 import org.coindirect.centrifuge.java.async.Future;
 import org.coindirect.centrifuge.java.config.ReconnectConfig;
 import org.coindirect.centrifuge.java.credentials.Token;
@@ -23,6 +25,7 @@ import org.coindirect.centrifuge.java.subscription.UnsubscribeRequest;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.Handshakedata;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
@@ -34,8 +37,14 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.nio.channels.NotYetConnectedException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -47,6 +56,10 @@ import java.util.concurrent.Executors;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 
 /**
@@ -55,8 +68,6 @@ import javax.annotation.Nullable;
  */
 public class Centrifugo {
     private static final Logger Log = LoggerFactory.getLogger(Centrifugo.class);
-
-    private static final String TAG = "CentrifugoClient";
 
     private static final String PRIVATE_CHANNEL_PREFIX = "$";
 
@@ -69,6 +80,8 @@ public class Centrifugo {
     private static final int STATE_DISCONNECTING = 3;
 
     private static final int STATE_CONNECTING = 4;
+
+    private static final int CONNECTION_LOST = -10;
 
     private String wsURI;
 
@@ -122,15 +135,54 @@ public class Centrifugo {
             this.state = STATE_CONNECTING;
             final URI uri = URI.create(wsURI);
             client = new Client(uri, new Draft_6455());
+
+            SSLContext sslContext;
+            try {
+                sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, getTrustManager(), new SecureRandom());
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                e.printStackTrace();
+                if (connectionListener != null) {
+                    connectionListener.onDisconnected(-1, e.getMessage(), true);
+                }
+                return;
+            }
+            if (sslContext != null) {
+                client.setSocketFactory(sslContext.getSocketFactory());
+            }
             client.start();
         }
     }
 
+    private TrustManager[] getTrustManager() {
+        return new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                    }
+
+                    @Override
+                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                    }
+
+                    @Override
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new java.security.cert.X509Certificate[]{};
+                    }
+                }
+        };
+    }
+
     public void disconnect() {
         if (client != null && state == STATE_CONNECTED) {
+            reconnectConfig = null;
             state = STATE_DISCONNECTING;
             client.stop();
         }
+    }
+
+    public boolean isConnect() {
+        return this.state == STATE_CONNECTED;
     }
 
     @Nullable
@@ -223,14 +275,12 @@ public class Centrifugo {
             connectionListener.onDisconnected(code, reason, remote);
         }
         //connection closed by remote host or was lost
-        if (remote) {
-            if (reconnectConfig != null) {
-                //reconnect enabled
-                if (reconnectConfig.shouldReconnect()) {
-                    reconnectConfig.incReconnectCount();
-                    long reconnectDelay = reconnectConfig.getReconnectDelay();
-                    scheduleReconnect(reconnectDelay);
-                }
+        if (reconnectConfig != null) {
+            //reconnect enabled
+            if (reconnectConfig.shouldReconnect()) {
+                reconnectConfig.incReconnectCount();
+                long reconnectDelay = reconnectConfig.getReconnectDelay();
+                scheduleReconnect(reconnectDelay);
             }
         }
     }
@@ -242,6 +292,10 @@ public class Centrifugo {
     public void onError(final Exception ex) {
         Log.error("onError: ", ex);
         state = STATE_ERROR;
+
+        if (connectionListener != null) {
+            connectionListener.onDisconnected(CONNECTION_LOST, "", false);
+        }
     }
 
     protected void onSubscriptionError(@Nullable final String subscriptionError) {
@@ -337,11 +391,18 @@ public class Centrifugo {
         }
     }
 
+    /**
+     * Method for unsubscribe from specific channel. {@link UnsubscribeRequest}
+     *
+     * @param unsubscribeRequest chanel to unsubscribe from
+     */
     public void unsubscribe(final UnsubscribeRequest unsubscribeRequest) {
         if (state != STATE_CONNECTED) {
-            for (SubscriptionRequest request : channelsToSubscribe) {
+            Iterator<SubscriptionRequest> subscriptionIterator = channelsToSubscribe.iterator();
+            while (subscriptionIterator.hasNext()) {
+                SubscriptionRequest request = subscriptionIterator.next();
                 if (request.getChannel().equals(unsubscribeRequest.getChannel())) {
-                    channelsToSubscribe.remove(request);
+                    subscriptionIterator.remove();
                 }
             }
             return;
@@ -422,6 +483,9 @@ public class Centrifugo {
      */
     protected void onMessage(@Nonnull final JSONObject message) {
         String method = message.optString("method", "");
+        if (method.equals("ping")) {
+            return;
+        }
         if (method.equals("connect")) {
             JSONObject body = message.optJSONObject("body");
             if (body != null) {
@@ -563,6 +627,21 @@ public class Centrifugo {
         client.send(jsonObject.toString());
     }
 
+    public void pind() {
+        JSONObject jsonObject = new JSONObject();
+        String commandId = UUID.randomUUID().toString();
+
+        try {
+            jsonObject.put("uid", commandId);
+            jsonObject.put("method", "ping");
+        } catch (JSONException e) {
+            //FIXME error handling
+        }
+
+        client.sendPing();
+        client.send(jsonObject.toString());
+    }
+
     private void scheduleReconnect(@Nonnegative final long delay) {
         final Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -587,6 +666,7 @@ public class Centrifugo {
 
         public Client(final URI serverURI, final Draft draft) {
             super(serverURI, draft);
+            setConnectionLostTimeout(0);
             clientThread = new Thread(this, "Centrifugo");
         }
 
@@ -597,6 +677,15 @@ public class Centrifugo {
         @Override
         public void onOpen(final ServerHandshake handshakedata) {
             Centrifugo.this.onOpen(handshakedata);
+        }
+
+        @Override
+        protected void onSetSSLParameters(SSLParameters sslParameters) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                super.onSetSSLParameters(sslParameters);
+            }
+            //noting
+            //TODO fix for Android API 24 and lower
         }
 
         /**
@@ -671,7 +760,11 @@ public class Centrifugo {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Client.super.send(text);
+                    try {
+                        Client.super.send(text);
+                    } catch (WebsocketNotConnectedException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             });
         }

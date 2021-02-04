@@ -10,7 +10,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.android.tools.build:gradle:4.0.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
@@ -22,12 +22,12 @@ repositories {
 }
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "28.0.3"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 28
+        minSdkVersion 21
+        targetSdkVersion 30
         versionCode 1
         versionName "0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -47,17 +47,17 @@ repositories {
 
 
 dependencies {
-    implementation 'com.github.archiecrown:Java-WebSocket:ca36afc469'
+//    implementation 'com.github.archiecrown:Java-WebSocket:ca36afc469'
+    implementation 'org.java-websocket:Java-WebSocket:1.5.1'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    implementation 'org.slf4j:slf4j-api:1.7.25'
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.robolectric:robolectric:4.2'
-    testImplementation 'org.mockito:mockito-core:2.25.1'
-    testImplementation 'com.squareup.okhttp3:okhttp:3.14.0'
+    implementation 'org.slf4j:slf4j-api:1.7.26'
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'org.robolectric:robolectric:4.4'
+    testImplementation 'org.mockito:mockito-core:3.6.28'
+    testImplementation 'com.squareup.okhttp3:okhttp:4.9.0'
     testImplementation 'com.squareup.okhttp:mockwebserver:2.7.5'
-    testImplementation 'commons-codec:commons-codec:1.10'
+    testImplementation 'commons-codec:commons-codec:1.13'
     testImplementation "org.testcontainers:testcontainers:1.11.1"
-//    testImplementation files('lib/testcontainers-1.0.5.jar')
 }
 
 configurations.all {
