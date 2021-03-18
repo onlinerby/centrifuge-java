@@ -143,13 +143,11 @@ public class Centrifugo {
             } catch (NoSuchAlgorithmException | KeyManagementException e) {
                 e.printStackTrace();
                 if (connectionListener != null) {
-                    connectionListener.onDisconnected(-1, e.getMessage(), true);
+                    connectionListener.onDisconnected(-1, e.getMessage(), true, e);
                 }
                 return;
             }
-            if (sslContext != null) {
-                client.setSocketFactory(sslContext.getSocketFactory());
-            }
+            client.setSocketFactory(sslContext.getSocketFactory());
             client.start();
         }
     }
@@ -272,7 +270,7 @@ public class Centrifugo {
             activeSubscription.setConnected(false);
         }
         if (connectionListener != null) {
-            connectionListener.onDisconnected(code, reason, remote);
+            connectionListener.onDisconnected(code, reason, remote, null);
         }
         //connection closed by remote host or was lost
         if (reconnectConfig != null) {
@@ -294,7 +292,7 @@ public class Centrifugo {
         state = STATE_ERROR;
 
         if (connectionListener != null) {
-            connectionListener.onDisconnected(CONNECTION_LOST, "", false);
+            connectionListener.onDisconnected(CONNECTION_LOST, "", false, ex);
         }
     }
 
@@ -548,7 +546,7 @@ public class Centrifugo {
             if (connectionListener != null) {
                 DownstreamMessage downstreamMessage = new DownstreamMessage(message);
                 final String reason = downstreamMessage.getBody().optString("reason");
-                connectionListener.onDisconnected(-1, reason, true);
+                connectionListener.onDisconnected(-1, reason, true, null);
             }
             return;
         }
